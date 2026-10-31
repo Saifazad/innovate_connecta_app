@@ -491,7 +491,7 @@ class _ResourcesScreenState extends State<ResourcesScreen> {
                 'assets/icon/app_icon.png',
                 width: 20,
                 height: 20,
-                errorBuilder: (_, __, ___) => const Icon(
+                errorBuilder: (context, error, stackTrace) => const Icon(
                   Icons.hub_rounded,
                   size: 18,
                   color: Color(0xFF7C3AED),

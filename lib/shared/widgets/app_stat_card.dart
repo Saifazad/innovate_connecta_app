@@ -163,7 +163,7 @@ class AppStatCard extends StatelessWidget {
                         ),
                       ),
                     ),
-                    if (trailingWidget != null) trailingWidget,
+                    ?trailingWidget,
                   ],
                 ),
                 const SizedBox(height: 12),

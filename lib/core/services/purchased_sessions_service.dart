@@ -187,10 +187,14 @@ class PurchasedSessionsService {
     for (final map in effectiveList) {
       final session =
           RecordedSessionModel.fromJson(map).copyWith(isEnrolled: true);
-      if (session.id > 0 && seenIds.contains(session.id)) continue;
+      if (session.id > 0 && seenIds.contains(session.id)) {
+        continue;
+      }
       if (session.slug != null &&
           session.slug!.isNotEmpty &&
-          seenSlugs.contains(session.slug)) continue;
+          seenSlugs.contains(session.slug)) {
+        continue;
+      }
 
       if (session.id > 0) seenIds.add(session.id);
       if (session.slug != null && session.slug!.isNotEmpty) {

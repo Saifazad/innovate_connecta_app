@@ -4,6 +4,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 
+import 'package:innovate_connecta_app/core/network/api_client.dart';
+import 'package:innovate_connecta_app/core/services/database_service.dart';
 import 'package:innovate_connecta_app/features/profile/views/profile_screen.dart';
 import 'package:innovate_connecta_app/features/profile/views/security_screen.dart';
 import 'package:innovate_connecta_app/features/profile/models/student_profile_model.dart';
@@ -131,6 +133,9 @@ void main() {
   });
 
   group('Resume Model, Repository & ViewModel Tests', () {
+    setUp(() {
+      DatabaseService.instance.reset();
+    });
     test('ResumeModel serializes and deserializes properly', () {
       final model = ResumeModel(
         id: 'res-1',
@@ -154,7 +159,7 @@ void main() {
     test('ResumeRepository fetches and saves active resume', () async {
       final repo = ResumeRepository();
       final initial = await repo.fetchActiveResume();
-      expect(initial.fileName, 'Resume.pdf');
+      expect(initial?.fileName, 'Resume.pdf');
 
       const updated = ResumeModel(
         id: 'res-custom',
@@ -168,8 +173,8 @@ void main() {
       expect(saved, true);
 
       final current = await repo.fetchActiveResume();
-      expect(current.fileName, 'custom_cv.pdf');
-      expect(current.title, 'Software Engineer CV');
+      expect(current?.fileName, 'custom_cv.pdf');
+      expect(current?.title, 'Software Engineer CV');
     });
 
     test('ResumeViewModel initial state has active resume', () {
@@ -258,7 +263,18 @@ void main() {
     });
 
     test('SecurityViewModel succeeds with valid inputs', () async {
-      final vm = SecurityViewModel();
+      final mockClient = MockClient((request) async {
+        return http.Response(
+          jsonEncode({
+            'status': true,
+            'message': 'Your password has been updated successfully!',
+          }),
+          200,
+          headers: {'content-type': 'application/json'},
+        );
+      });
+      final apiClient = ApiClient(client: mockClient);
+      final vm = SecurityViewModel(apiClient: apiClient);
       final result = await vm.updatePassword(
         currentPassword: 'password123',
         newPassword: 'securePassword789',

@@ -1,13 +1,24 @@
-import 'dart:io';
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:http/http.dart' as http;
+import 'package:http/testing.dart';
 import 'package:innovate_connecta_app/core/services/purchased_sessions_service.dart';
+import 'package:innovate_connecta_app/features/profile/models/certificate_model.dart';
+import 'package:innovate_connecta_app/features/profile/repository/certificates_repository.dart';
 import 'package:innovate_connecta_app/features/dashboard/view_models/dashboard_view_model.dart';
 import 'package:innovate_connecta_app/features/dashboard/views/dashboard_screen.dart';
 import 'package:innovate_connecta_app/features/sessions/models/recorded_session_model.dart';
+import 'package:innovate_connecta_app/features/sessions/repository/sessions_repository.dart';
 import 'package:innovate_connecta_app/features/sessions/views/all_purchased_recorded_sessions_screen.dart';
 import 'package:innovate_connecta_app/features/sessions/widgets/purchased_recorded_session_card.dart';
+
+class FakeCertificatesRepository extends CertificatesRepository {
+  @override
+  Future<List<CertificateModel>> fetchCertificates() async =>
+      CertificateModel.dummyCertificates;
+}
 
 void main() {
   setUp(() {
@@ -138,7 +149,16 @@ void main() {
       tester.view.devicePixelRatio = 1.0;
       addTearDown(tester.view.resetPhysicalSize);
 
-      final vm = DashboardViewModel();
+      final mockRepo = SessionsRepository(
+        client: MockClient((request) async {
+          return http.Response(jsonEncode({'status': true, 'data': []}), 200);
+        }),
+      );
+      final vm = DashboardViewModel(
+        sessionsRepository: mockRepo,
+        certificatesRepository: FakeCertificatesRepository(),
+      );
+      await vm.loadDashboardData();
 
       await tester.pumpWidget(
         MaterialApp(
@@ -170,7 +190,15 @@ void main() {
         );
       }
 
-      final vm = DashboardViewModel();
+      final mockRepo = SessionsRepository(
+        client: MockClient((request) async {
+          return http.Response(jsonEncode({'status': true, 'data': []}), 200);
+        }),
+      );
+      final vm = DashboardViewModel(
+        sessionsRepository: mockRepo,
+        certificatesRepository: FakeCertificatesRepository(),
+      );
       await vm.loadDashboardData();
 
       await tester.pumpWidget(

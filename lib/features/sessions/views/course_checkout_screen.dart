@@ -123,6 +123,7 @@ class _CourseCheckoutScreenState extends State<CourseCheckoutScreen> {
     );
 
     // Navigate to Payment Confirmed Screen
+    if (!mounted) return;
     Navigator.of(context).pushReplacement(
       MaterialPageRoute(
         builder: (_) => CoursePaymentSuccessScreen(

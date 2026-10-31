@@ -52,10 +52,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
     } else {
       _viewModel = DashboardViewModel();
       _ownsViewModel = true;
+      _viewModel.loadDashboardData();
     }
 
     PurchasedSessionsService.instance.purchaseCountNotifier.addListener(_onPurchasesChanged);
-    _viewModel.loadDashboardData();
   }
 
   void _onPurchasesChanged() {
